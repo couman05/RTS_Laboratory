@@ -21,7 +21,7 @@ public class ExecutionThread extends Thread {
     }
 
     public void run() {
-        while (true) {
+
             if (this.getName().equals("Thread-0")) {
                 try {
                     System.out.println(this.getName() + " - STATE 1");
@@ -31,22 +31,19 @@ public class ExecutionThread extends Thread {
                     for (int i = 0; i < k * 100000; i++) {
                         i++;
                         i--;
+                        try {
+                            Thread.sleep(sleep * 500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
 
-                } finally {
+                } finally {  // not really needed
                     lock1.unlock();
                 }
-                try {
-                    Thread.sleep(sleep * 500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+
                 System.out.println(this.getName() + " - STATE 3");
-                try {
-                    barrier.await(); // Wait for all threads to reach STATE 3
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
             }
 
             if (this.getName().equals("Thread-1")) {
@@ -71,11 +68,7 @@ public class ExecutionThread extends Thread {
                     e.printStackTrace();
                 }
                 System.out.println(this.getName() + " - STATE 3");
-                try {
-                    barrier.await(); // Wait for all threads to reach STATE 3
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
             }
             if (this.getName().equals("Thread-2")) {
                 try {
@@ -97,12 +90,8 @@ public class ExecutionThread extends Thread {
                     e.printStackTrace();
                 }
                 System.out.println(this.getName() + " - STATE 3");
-                try {
-                    barrier.await(); // Wait for all threads to reach STATE 3
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
             }
         }
     }
-}
+

@@ -20,7 +20,7 @@ public class ExecutionThread extends Thread {
     }
 
     public void run() {
-        while (true) {
+        while (true) {  // if(semaphore.tryacquire)
             System.out.println(this.getName() + " - STATE 1");
             int k = (int) (Math.random() * (activity1[1] - activity1[0]) + activity1[0]);
             for (int i = 0; i < k * 100000; i++) {

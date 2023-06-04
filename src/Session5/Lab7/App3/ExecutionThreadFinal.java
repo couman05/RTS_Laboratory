@@ -19,6 +19,12 @@ public class ExecutionThreadFinal extends Thread {
 
     public void run() {
         System.out.println(this.getName() + " - STATE 1");
+        try
+        {
+            Thread.sleep(7*500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         synchronized (monitor) {
             try {
                 monitor.wait();
@@ -33,13 +39,12 @@ public class ExecutionThreadFinal extends Thread {
             i--;
         }
         System.out.println(this.getName() + " - STATE 3");
-        if (t != null) {
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+
         latch.countDown();
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

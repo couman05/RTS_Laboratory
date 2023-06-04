@@ -18,19 +18,27 @@ public class Main {
         ReentrantLock lock2= new ReentrantLock();
         CyclicBarrier barrier=new CyclicBarrier(2);
 
-        ExecutionThread thread1 = new ExecutionThread( 4, activity1, activity2,lock1,lock2,barrier);
-        ExecutionThread thread2= new ExecutionThread( 5, activity3, activity4,lock1,lock2,barrier);
+        while(true)
+        {
+            ExecutionThread thread1 = new ExecutionThread(4, activity1, activity2, lock1, lock2, barrier);
+            ExecutionThread thread2 = new ExecutionThread(5, activity3, activity4, lock1, lock2, barrier);
 
-        thread1.start();
-        thread2.start();
+            thread1.start();
+            thread2.start();
 
-        try {
-            thread1.join();
-            thread2.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            try {
+                thread1.join();
+                thread2.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
+                barrier.await();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            barrier.reset();
         }
-
-
     }
 }

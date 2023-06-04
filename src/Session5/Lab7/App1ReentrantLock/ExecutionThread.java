@@ -19,8 +19,8 @@ public class ExecutionThread extends Thread {
         this.barrier = barrier;
     }
 
-    public void run() {
-        while (true) {
+    public void run() { // while loop in the main
+
             System.out.println(this.getName() + " - STATE 1");
             int k = (int) (Math.random() * (activity1[1] - activity1[0]) + activity1[0]);
             for (int i = 0; i < k * 100000; i++) {
@@ -30,7 +30,7 @@ public class ExecutionThread extends Thread {
             System.out.println(this.getName() + " - TRANSITION 1 - 2");
 
             if (this.getName().equals("Thread-0")) {
-                lock1.lock();
+                if (lock1.tryLock()){
                 try {
                     System.out.println(this.getName() + " - STATE 2");
                     k = (int) (Math.random() * (activity2[1] - activity2[0]) + activity2[0]);
@@ -62,42 +62,41 @@ public class ExecutionThread extends Thread {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                }
             }
 
             if (this.getName().equals("Thread-1")) {
-                lock2.lock();
-                try {
-                    System.out.println(this.getName() + " - STATE 2");
-                    k = (int) (Math.random() * (activity2[1] - activity2[0]) + activity2[0]);
-                    for (int i = 0; i < k * 100000; i++) {
-                        i++;
-                        i--;
-                    }
-                    System.out.println(this.getName() + " - TRANSITION 2 - 3");
-                    lock1.lock();
-                    try {
-                        System.out.println(this.getName() + " - STATE 3");
-                    } finally {
-                        lock1.unlock();
-                    }
-                    try {
-                        Thread.sleep(sleep);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } finally {
-                    lock2.unlock();
-                }
+                if (lock1.tryLock())
+                    if (lock2.tryLock())
+                    {
+                        try {
+                            System.out.println(this.getName() + " - STATE 2");
+                            k = (int) (Math.random() * (activity2[1] - activity2[0]) + activity2[0]);
+                            for (int i = 0; i < k * 100000; i++) {
+                                i++;
+                                i--;
+                            }
+                            System.out.println(this.getName() + " - TRANSITION 2 - 3");
+                            lock1.lock();
+                            try {
+                                System.out.println(this.getName() + " - STATE 3");
+                            } finally {
+                                lock1.unlock();
+                            }
+                            try {
+                                Thread.sleep(sleep);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } finally {
+                            lock2.unlock();
+                        }
 
-                System.out.println(this.getName() + " - TRANSITION 3 - 4");
-                System.out.println(this.getName() + " - STATE 4");
+                        System.out.println(this.getName() + " - TRANSITION 3 - 4");
+                        System.out.println(this.getName() + " - STATE 4");
 
-                try {
-                    barrier.await(); // Wait for all threads to reach STATE 4
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    }
+
             }
         }
     }
-}
